@@ -13,6 +13,8 @@ pub fn multi<T: Semiring>(operand1: T, operand2: T) -> T { T::Multi::operation(o
 
 pub trait SemiringWithOne = Semiring<Multi: Monoid<Self>>;
 
+pub fn one<T: SemiringWithOne>() -> T { T::Multi::identity() }
+
 
 pub trait CommutativeSemiring = Semiring<Multi: CommutativeSemigroup<Self>>;
 
@@ -29,8 +31,6 @@ pub fn minus<T: Ring>(operand1: T, operand2: T) -> T {
 
 
 pub trait RingWithOne = Ring<Multi: Monoid<Self>>;
-
-pub fn one<T: RingWithOne>() -> T { T::Multi::identity() }
 
 pub trait CommutativeRing = Ring<Multi: CommutativeSemigroup<Self>>;
 

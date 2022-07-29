@@ -1,11 +1,11 @@
 use std::fmt::{Display, Formatter};
 use std::iter::Sum;
 use std::ops::{Add, Mul, Neg, Sub};
-use finite::FiniteMatrix;
+pub use finite::FiniteMatrix;
 use Matrix::Finite;
 use crate::matrix::Matrix::InfiniteDiagonal;
 
-mod finite;
+pub mod finite;
 
 
 #[derive(Clone, Eq, PartialEq, Debug, Hash)]
@@ -34,18 +34,14 @@ impl<T: $trait<T, Output=T> + Clone> $trait for Matrix<T> {
             InfiniteDiagonal(d1) => match rhs {
                 InfiniteDiagonal(d2) => InfiniteDiagonal(d1 $operator d2),
                 Finite(m2) => {
-                    let shape = m2.shape();
-                    let iter = m2.into_iter_with_indexes()
-                        .map(|((x, y), item)| if x == y { d1.clone() $operator item } else { item });
-                    Finite(FiniteMatrix::from_iter(shape, iter))
+                    let m = m2.map_with_indexes(|(x, y), item| if x == y { d1.clone() $operator item } else { item });
+                    Finite(m)
                 }
             }
             Finite(m1) => match rhs {
                 InfiniteDiagonal(d2) => {
-                    let shape = m1.shape();
-                    let iter = m1.into_iter_with_indexes()
-                        .map(|((x, y), item)| if x == y { item $operator d2.clone() } else { item });
-                    Finite(FiniteMatrix::from_iter(shape, iter))
+                    let m = m1.map_with_indexes(|(x, y), item| if x == y { item $operator d2.clone() } else { item });
+                    Finite(m)
                 }
                 Finite(m2) => Finite(m1 $operator m2)
             }
@@ -84,8 +80,6 @@ impl<T: Mul<Output=T> + Clone + Sum> Mul for Matrix<T> {
         }
     }
 }
-
-
 
 // todo!("ring, etc")
 // todo!("fibonacci")

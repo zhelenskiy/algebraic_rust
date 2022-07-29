@@ -1,7 +1,8 @@
 pub mod integers;
 mod helpers;
 pub mod fractionals;
-mod matrix;
+pub mod matrix;
+pub mod finite_matrix;
 
 
 #[cfg(test)]

@@ -10,6 +10,7 @@ pub struct Shape {
 
 impl Shape {
     pub fn empty() -> Shape { Shape { height: 0, width: 0 } }
+    pub fn is_empty(&self) -> bool { *self == Shape::empty() }
 }
 
 #[derive(Clone, Eq, PartialEq, Debug, Hash)]
@@ -55,7 +56,7 @@ impl<T> FiniteMatrix<T> {
     pub fn iter(&self) -> impl Iterator<Item=&T> { self.storage.iter() }
     pub fn iter_mut(&mut self) -> impl Iterator<Item=&mut T> { self.storage.iter_mut() }
 
-    fn indexes_impl(height: usize, width: usize) -> impl Iterator<Item=(usize, usize)>{
+    fn indexes_impl(height: usize, width: usize) -> impl Iterator<Item=(usize, usize)> {
         (0..height).flat_map(move |row| (0..width).map(move |column| (row, column)))
     }
 
@@ -77,6 +78,12 @@ impl<T> FiniteMatrix<T> {
 
     pub fn map<R>(self, f: impl Fn(T) -> R) -> FiniteMatrix<R> {
         FiniteMatrix::<R>::from_iter(self.shape, self.into_iter().map(f))
+    }
+
+    pub fn map_with_indexes<R>(self, f: impl Fn((usize, usize), T) -> R) -> FiniteMatrix<R> {
+        FiniteMatrix::<R>::from_iter(
+            self.shape, self.into_iter_with_indexes().map(|(x, y)| f(x, y)),
+        )
     }
 }
 
