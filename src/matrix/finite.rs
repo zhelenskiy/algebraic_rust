@@ -1,8 +1,8 @@
 use std::fmt::{Display, Formatter};
 use std::ops::{Add, Index, IndexMut, Mul, Neg, Sub};
-use std::iter::Sum;
+use std::iter::{Sum, zip};
 
-#[derive(Clone, Copy, Eq, PartialEq, Debug)]
+#[derive(Clone, Copy, Eq, PartialEq, Debug, Hash)]
 pub struct Shape {
     pub height: usize,
     pub width: usize,
@@ -12,7 +12,7 @@ impl Shape {
     pub fn empty() -> Shape { Shape { height: 0, width: 0 } }
 }
 
-#[derive(Clone, Eq, PartialEq, Debug)]
+#[derive(Clone, Eq, PartialEq, Debug, Hash)]
 pub struct FiniteMatrix<T, > {
     storage: Vec<T>,
     shape: Shape,
@@ -54,6 +54,30 @@ impl<T> FiniteMatrix<T> {
 
     pub fn iter(&self) -> impl Iterator<Item=&T> { self.storage.iter() }
     pub fn iter_mut(&mut self) -> impl Iterator<Item=&mut T> { self.storage.iter_mut() }
+
+    fn indexes_impl(height: usize, width: usize) -> impl Iterator<Item=(usize, usize)>{
+        (0..height).flat_map(move |row| (0..width).map(move |column| (row, column)))
+    }
+
+    pub fn indexes(&self) -> impl Iterator<Item=(usize, usize)> {
+        Self::indexes_impl(self.height(), self.width())
+    }
+
+    pub fn iter_with_indexes(&self) -> impl Iterator<Item=((usize, usize), &T)> {
+        zip(self.indexes(), self.iter())
+    }
+
+    pub fn iter_mut_with_indexes(&mut self) -> impl Iterator<Item=((usize, usize), &mut T)> {
+        zip(self.indexes(), self.iter_mut())
+    }
+
+    pub fn into_iter_with_indexes(self) -> impl Iterator<Item=((usize, usize), T)> {
+        zip(self.indexes(), self.into_iter())
+    }
+
+    pub fn map<R>(self, f: impl Fn(T) -> R) -> FiniteMatrix<R> {
+        FiniteMatrix::<R>::from_iter(self.shape, self.into_iter().map(f))
+    }
 }
 
 
@@ -153,9 +177,7 @@ impl<T: Neg<Output=T>> Neg for FiniteMatrix<T> {
     type Output = FiniteMatrix<T>;
 
     fn neg(self) -> Self::Output {
-        let shape = self.shape;
-        let element_wise_sum = self.into_iter().map(T::neg);
-        FiniteMatrix::<T>::from_iter(shape, element_wise_sum)
+        self.map(T::neg)
     }
 }
 
@@ -174,7 +196,7 @@ impl<T: Mul<Output=T> + Sum + Clone> Mul for FiniteMatrix<T> {
 
 #[cfg(test)]
 mod tests {
-    use crate::finite::{FiniteMatrix, Shape};
+    use crate::matrix::finite::{FiniteMatrix, Shape};
 
     #[test]
     fn print() {

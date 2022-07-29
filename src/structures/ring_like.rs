@@ -1,6 +1,6 @@
 use super::group_like::*;
 
-pub trait Semiring {
+pub trait Semiring: Sized {
     type Sum: CommutativeMonoid<Self>;
     type Multi: Semigroup<Self>;
 }
@@ -12,6 +12,7 @@ pub fn plus<T: Semiring>(operand1: T, operand2: T) -> T { T::Sum::operation(oper
 pub fn multi<T: Semiring>(operand1: T, operand2: T) -> T { T::Multi::operation(operand1, operand2) }
 
 pub trait SemiringWithOne = Semiring<Multi: Monoid<Self>>;
+
 
 pub trait CommutativeSemiring = Semiring<Multi: CommutativeSemigroup<Self>>;
 

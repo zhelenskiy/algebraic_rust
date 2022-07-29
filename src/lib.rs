@@ -1,8 +1,13 @@
 #![feature(trait_alias)]
 #![feature(associated_type_bounds)]
+// #![feature(adt_const_params)]
 
-mod structures;
-mod implementations;
+extern crate core;
+
+pub mod structures;
+pub mod implementations;
+pub mod power;
+pub mod matrix;
 
 #[cfg(test)]
 mod tests {

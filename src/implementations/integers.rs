@@ -3,7 +3,7 @@ use num::rational::Ratio;
 use crate::implementations::helpers::sum::AssociativeCommutativeSum;
 use crate::implementations::helpers::multi::AssociativeCommutativeMulti;
 use crate::structures::basics::WithIdentityElement;
-use crate::structures::common_ring_like::Semiring;
+use crate::structures::ring_like::Semiring;
 
 macro_rules! impls {
     ($t:ty, $zero:expr, $one:expr, $pt:tt, $bound:tt) => {
@@ -56,9 +56,3 @@ impls!(BigInt, BigInt::zero(), BigInt::one());
 impls!(BigUint, BigUint::zero(), BigUint::one());
 impls!(Complex<T>, Complex::<T>::zero(), Complex::<T>::one(), T, Num);
 impls!(Ratio<T>, Ratio::<T>::zero(), Ratio::<T>::one(), T, Integer);
-
-
-fn f() {
-    BigInt::one();
-    Complex::<i32>::one();
-}
