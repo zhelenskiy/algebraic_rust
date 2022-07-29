@@ -1,5 +1,5 @@
 use std::marker::PhantomData;
-use crate::matrix::{FiniteMatrix, Matrix};
+use crate::matrix::Matrix;
 use crate::matrix::Matrix::{Finite, InfiniteDiagonal};
 use crate::structures::basics::{Associative, Commutative, Invertible, Magma, WithIdentityElement};
 use crate::structures::ring_like::{multi, one, plus, Semiring, unary_minus, zero};

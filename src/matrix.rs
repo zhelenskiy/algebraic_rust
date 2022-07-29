@@ -1,12 +1,18 @@
 use std::fmt::{Display, Formatter};
 use std::iter::Sum;
-use std::ops::{Add, Mul, Neg, Sub};
+use std::ops::{Add, Index, Mul, Neg, Sub};
 pub use finite::FiniteMatrix;
 use Matrix::Finite;
 use crate::matrix::Matrix::InfiniteDiagonal;
+use crate::matrix::finite::Shape;
+use crate::structures::ring_like::{Semiring, zero};
 
 pub mod finite;
 
+
+pub fn matrix<T>(height: usize, width: usize, flat_data: Vec<T>) -> Matrix<T> {
+    Finite(FiniteMatrix::from_iter(Shape { height, width }, flat_data.into_iter()))
+}
 
 #[derive(Clone, Eq, PartialEq, Debug, Hash)]
 pub enum Matrix<T> {
@@ -81,6 +87,11 @@ impl<T: Mul<Output=T> + Clone + Sum> Mul for Matrix<T> {
     }
 }
 
-// todo!("ring, etc")
-// todo!("fibonacci")
-// todo!("macroses")
+impl <T: Semiring + Clone> Matrix<T> {
+    pub fn get(&self, index: (usize, usize)) -> T {
+        match &self {
+            &InfiniteDiagonal(d) => if index.0 == index.1 { d.to_owned() } else { zero() },
+            &Finite(m) => m.index(index).to_owned()
+        }
+    }
+}

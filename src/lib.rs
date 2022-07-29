@@ -8,6 +8,7 @@ pub mod structures;
 pub mod implementations;
 pub mod power;
 pub mod matrix;
+pub mod fibonacci;
 
 #[cfg(test)]
 mod tests {
